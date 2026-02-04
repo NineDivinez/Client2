@@ -19,6 +19,8 @@ export default class ServerProt {
     static readonly IF_SETTEXT: number = 201; // NXT naming
     static readonly IF_SETNPCHEAD: number = 204; // NXT naming
     static readonly IF_SETPOSITION: number = 209; // NXT naming
+    // server config sync
+    static readonly SERVER_CONFIG: number = 5;
 
     // tutorial area
     static readonly TUTORIAL_FLASHSIDE: number = 126;

@@ -1305,7 +1305,7 @@ class Game extends Client {
             // timers when a different tab is active, or the window has been minimized.
             // afk logout has to still happen after 90s of no activity (if allowed).
             // https://developer.chrome.com/blog/timer-throttling-in-chrome-88/
-            if (Date.now() - this.idleCycles > 90_000) {
+            if (Date.now() - this.idleCycles > this.serverIdleTimeout) {
                 // 4500 ticks * 20ms = 90000ms
                 this.idleTimeout = 250;
                 // 500 ticks * 20ms = 10000ms
@@ -4934,6 +4934,16 @@ class Game extends Client {
 
             // console.log(`Incoming packet: ${this.packetType}`);
 
+            if (this.packetType === ServerProt.SERVER_CONFIG) {
+                // SERVER_CONFIG - sync config from server
+                const version: number = this.in.g1;
+                if (version >= 1) {
+                    this.serverIdleTimeout = this.in.g4;
+                }
+                this.serverConfigVersion = version;
+                this.packetType = -1;
+                return true;
+            }
             if (this.packetType === ServerProt.VARP_SMALL) {
                 // VARP_SMALL
                 const varp: number = this.in.g2;

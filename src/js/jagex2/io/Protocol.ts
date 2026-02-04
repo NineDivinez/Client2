@@ -31,7 +31,7 @@ export default class Protocol {
 
     // prettier-ignore
     static readonly SERVERPROT_SIZES: number[] = [
-        0, -2, 4, 6, -1, 0, 0, 2, 0, 0,
+        0, -2, 4, 6, -1, 5, 0, 2, 0, 0,
         0, 0, 5, 4, 2, 2, 0, 0, 0, 0, 2,
         -2, 2, 14, 0, 6, 3, 0, 4, 0, 0,
         0, 3, 0, 0, 0, 0, 0, 0, 0, 0, -1,
