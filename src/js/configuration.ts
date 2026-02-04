@@ -22,7 +22,12 @@ async function world(): Promise<void> {
     if (GameShell.getParameter('world').length === 0) {
         GameShell.setParameter('world', '1');
     }
-    if (['0', '998', '999'].includes(GameShell.getParameter('world'))) {
+
+    // RS Haven: Use current host as proxy (website handles routing)
+    const hostname: string = window.location.hostname;
+    if (hostname.includes('rsps') || hostname.includes('rshaven') || hostname.includes('nothingnewgames')) {
+        rsHavenConfiguration();
+    } else if (['0', '998', '999'].includes(GameShell.getParameter('world'))) {
         localConfiguration();
     } else {
         await liveConfiguration(window.location.protocol.startsWith('https'));
@@ -50,6 +55,19 @@ function method(): void {
 
 // ---
 
+function rsHavenConfiguration(): void {
+    // RS Haven uses the website as a reverse proxy
+    // All connections go through current host, website routes to correct world
+    const protocol: string = window.location.protocol;
+    const host: string = window.location.host;
+
+    Client.serverAddress = `${protocol}//${host}`;
+    Client.httpAddress = `${protocol}//${host}`;
+    Client.portOffset = 0;
+    Client.members = true;
+    Client.useDefaultWebSocketPort = true; // RS Haven proxies WebSocket through default HTTPS port
+}
+
 function localConfiguration(): void {
     if (+GameShell.getParameter('world') >= 998) {
         Client.httpAddress = 'data/pack/client';
@@ -71,7 +89,6 @@ async function liveConfiguration(secured: boolean): Promise<void> {
     Client.httpAddress = `${url.protocol}//${url.hostname}:${url.port}`;
     if (!secured) {
         Client.serverAddress = Client.serverAddress.replace('https:', 'http:');
-        // Client.httpAddress = Client.httpAddress.replace('https:', 'http:'); world 3 and 4 have to use secured
     }
     Client.portOffset = world.portOffset;
     Client.members = world?.members === true;
@@ -82,7 +99,6 @@ async function getWorldInfo(secured: boolean, id: number, retries: number = 0): 
     if (retries >= 10) {
         throw new Error('could not find world to connect!');
     }
-    // github host is secured for example.
     const protocol: string = secured ? 'https:' : 'http:';
     let worldlist: WorldList[];
     try {

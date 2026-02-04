@@ -56,6 +56,7 @@ export abstract class Client extends GameShell {
     static lowMemory: boolean = false;
     static serverAddress: string = '';
     static httpAddress: string = '';
+    static useDefaultWebSocketPort: boolean = false;
     static showDebug: boolean = false;
     static chatEra: number = 2; // 0 - early beta, 1 - late beta, 2 - launch
     static cameraEditor: boolean = false;
@@ -115,6 +116,9 @@ export abstract class Client extends GameShell {
     protected serverSeed: bigint = 0n;
     protected idleNetCycles: number = 0;
     protected idleTimeout: number = 0;
+    // Server config values (set by SERVER_CONFIG packet on login)
+    protected serverIdleTimeout: number = 600_000; // default 10 min, overwritten by server
+    protected serverConfigVersion: number = 0;
     protected systemUpdateTimer: number = 0;
     protected randomIn: Isaac | null = null;
     protected packetType: number = 0;

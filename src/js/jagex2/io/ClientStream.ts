@@ -1,3 +1,4 @@
+import {Client} from '../../client';
 import LinkList from '../datastruct/LinkList';
 import Linkable from '../datastruct/Linkable';
 import {sleep} from '../util/JsUtil';
@@ -22,8 +23,17 @@ export default class ClientStream {
             const secured: boolean = socket.host.startsWith('https');
             const protocol: string = secured ? 'wss' : 'ws';
             const host: string = socket.host.substring(socket.host.indexOf('//') + 2);
-            const port: number = secured ? socket.port + 2 : socket.port + 1;
-            const ws: WebSocket = new WebSocket(`${protocol}://${host}:${port}`, 'binary');
+
+            let wsUrl: string;
+            if (Client.useDefaultWebSocketPort) {
+                // RS Haven: WebSocket goes through default HTTPS port (proxied by website)
+                wsUrl = `${protocol}://${host}`;
+            } else {
+                const port: number = secured ? socket.port + 2 : socket.port + 1;
+                wsUrl = `${protocol}://${host}:${port}`;
+            }
+
+            const ws: WebSocket = new WebSocket(wsUrl, 'binary');
 
             ws.addEventListener('open', (): void => {
                 console.log('connection open!');
